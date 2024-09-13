@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "docker": "docker build -t music-downloader . && docker run -d --name music-downloader-app music-downloader"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0",
+    "youtube-dl-exec": "^3.0.8"
+  }
+}
