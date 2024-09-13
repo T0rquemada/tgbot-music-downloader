@@ -29,6 +29,9 @@ bot.on('message', async (msg) => {
 
     if (command_to_ignore.includes(message)) return;
     try {
+        let bot_msg = await bot.sendMessage(chat_id, "Start download audio...");
+        const bot_msg_id = bot_msg.message_id;
+        
         let result = await download_music(message);
         let file_path = join(__dirname, '../music', result);
 
@@ -44,7 +47,8 @@ bot.on('message', async (msg) => {
                 else console.log('Audio file deleted successfully');
             });
 
-            bot.deleteMessage(chat_id, message_id); // Delete video with link on video
+            bot.deleteMessage(chat_id, bot_msg_id); // Delete bot message about starting download
+            bot.deleteMessage(chat_id, message_id); // Delete link on video
         } else {
             bot.sendMessage(chat_id, 'Error: Audio file not found.');
         }
