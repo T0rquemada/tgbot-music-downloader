@@ -33,8 +33,3 @@ You should receive current vesrion programs
 #### Used packages:
 1. [node-telegram-bot-api](https://www.npmjs.com/package/node-telegram-bot-api)
 2. [youtube-dl-exec](https://www.npmjs.com/package/youtube-dl-exec)
-
-## ToDo:
-- [X] Delete music file after sending it
-- [ ] Send user notification, that downloading started, and then delete it
-- [X] Limit for video in 30 minutes
