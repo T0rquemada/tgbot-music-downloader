@@ -12,11 +12,18 @@ const bot = new TelegramBot(bot_token, {polling: true});
 
 let command_to_ignore = ['/start', '/help'];
 
+bot.onText('/start', (msg) => {
+    const chatId = msg.chat.id;
+    let answer = 'Send link on youtube video';
+
+    bot.sendMessage(chatId, answer || "Oops, undefined desc for '/start'");
+});
+
 bot.onText('/help', (msg) => {
     const chatId = msg.chat.id;
-    let answer ='This bot downloads music (in .mp3) from youtube video. To use send link on any video from YouTube. Supports video shorter 30 minutes';
+    let desc = 'This bot downloads music (in .mp3) from youtube video. To use just send link on any video from YouTube. Supports video shorter 30 minutes';
 
-    bot.sendMessage(chatId, answer || "Oops, undefined answer for '/help'");
+    bot.sendMessage(chatId, desc || "Oops, undefined desc for '/help'");
 });
 
 bot.on('message', async (msg) => {
@@ -24,22 +31,29 @@ bot.on('message', async (msg) => {
     const message = msg.text;
     const message_id = msg.message_id;
 
+    if (!message || typeof(message) !== 'string') {
+        console.error('Unexpected message from user: not provided or not string');
+        return;
+    }
+
     console.log('Receive message: ', message);
-    console.log('message_id: ', message_id);
 
     if (command_to_ignore.includes(message)) return;
+    else if (message[0] === '/') {
+        bot.sendMessage(chat_id, "Unknow command. Type /help to see available commands");
+        return;
+    }
     try {
         let bot_msg = await bot.sendMessage(chat_id, "Start download audio...");
         const bot_msg_id = bot_msg.message_id;
         
-        let result = await download_music(message);
-        let file_path = join(__dirname, '../music', result);
+        let music = await download_music(message);
+        let { title, artist } = music;
 
-        console.log('result: ', result);
-        console.log('audiofile_path: ', file_path);
+        let file_path = join(__dirname, '../music', `${title}.mp3`);
 
         if (fs.existsSync(file_path)) {
-            await bot.sendAudio(chat_id, file_path, { caption: 'Downloaded with @MusicDownloaderYTBot' });
+            await bot.sendAudio(chat_id, file_path, { title: title.replace('_', ' '), caption: 'Downloaded with @MusicDownloaderYTBot', performer: artist, thumbnail: thumbnail });
 
             // Delete downloaded file
             fs.unlink(file_path, (err) => {

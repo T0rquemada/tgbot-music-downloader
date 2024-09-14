@@ -26,14 +26,17 @@ async function download_music(link) {
             throw new Error('This song longer than 30 minutes!');
         }
 
-        let title = metadata.title;
-
-        if (already_exist(title)) {
-            console.log('This song already downloaded!');
-            return `${title}.mp3`;
+        let music_info = {
+            title: metadata.title,
+            artist: metadata.channel || 'Unknown artist'
         }
 
-        let output_placement = path.join(output_dir, `${title}.mp3`);
+        if (already_exist(music_info.title)) {
+            console.log('This song already downloaded!');
+            return music_info;
+        }
+
+        let output_placement = path.join(output_dir, `${music_info.title}.mp3`);
         let options = {
             extractAudio: true,
             audioFormat: 'mp3',
@@ -43,7 +46,7 @@ async function download_music(link) {
         let output = await ytdl(link, options);
 
         console.log('Download complete:', output);
-        return `${title}.mp3`;
+        return music_info;
     } catch (err) {
         throw new Error(err);
     }
